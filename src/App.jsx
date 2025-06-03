@@ -408,6 +408,14 @@ function App() {
         }
     });
 
+    // --- Адаптивность: определяем мобильное устройство ---
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 700);
+    useEffect(() => {
+        const handler = () => setIsMobile(window.innerWidth <= 700);
+        window.addEventListener("resize", handler);
+        return () => window.removeEventListener("resize", handler);
+    }, []);
+
     useEffect(() => {
         localStorage.setItem('calcHistory', JSON.stringify(history));
     }, [history]);
@@ -465,9 +473,9 @@ function App() {
     const PX = parseVector(PXstr);
     const PY = parseVector(PYstr);
 
-    // --- Стили для истории справа ---
+    // --- Стили для истории ---
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const historyBoxStyle = {
+    const historyBoxStyleDesktop = {
         position: "fixed",
         top: 24,
         right: 24,
@@ -480,6 +488,21 @@ function App() {
         minWidth: 220,
         boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
         maxWidth: "40vw"
+    };
+    const historyBoxStyleMobile = {
+        position: "fixed",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 2000,
+        background: isDark ? "rgba(35,40,45,0.98)" : "rgba(255,255,255,0.97)",
+        color: isDark ? "#f3f3f3" : "#111",
+        borderTop: "1px solid #888",
+        borderRadius: "12px 12px 0 0",
+        padding: "10px 8px 8px 8px",
+        boxShadow: "0 -2px 16px rgba(0,0,0,0.12)",
+        maxHeight: "40vh",
+        overflowY: "auto"
     };
     const historyBtnStyle = {
         textAlign: "left",
@@ -521,9 +544,9 @@ function App() {
                 <button onClick={handleClear} style={{ marginLeft: 10 }}>Очистить</button>
             </div>
 
-            {/* --- История справа сверху --- */}
-            {history.length > 0 && (
-                <div style={historyBoxStyle}>
+            {/* --- История: ПК и мобильная версия --- */}
+            {history.length > 0 && !isMobile && (
+                <div style={historyBoxStyleDesktop}>
                     <b style={{ display: "block", marginBottom: 8 }}>История расчётов</b>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {history.map((h, i) => (
@@ -543,6 +566,37 @@ function App() {
                             color: "#fff",
                             border: "1px solid #c62828",
                             marginTop: 12
+                        }}
+                        onClick={() => setHistory([])}
+                    >
+                        Очистить историю
+                    </button>
+                </div>
+            )}
+            {history.length > 0 && isMobile && (
+                <div style={historyBoxStyleMobile}>
+                    <b style={{ display: "block", marginBottom: 6, textAlign: "center" }}>История расчётов</b>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {history.map((h, i) => (
+                            <button
+                                key={i}
+                                style={historyBtnStyle}
+                                onClick={() => setResult(h)}
+                            >
+                                X: [{h.X.join(", ")}]<br />Y: [{h.Y.join(", ")}]
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        style={{
+                            ...historyBtnStyle,
+                            width: "100%",
+                            marginTop: 8,
+                            background: "#e57373",
+                            color: "#fff",
+                            border: "1px solid #c62828",
+                            borderRadius: 4,
+                            padding: "6px 0"
                         }}
                         onClick={() => setHistory([])}
                     >
