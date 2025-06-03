@@ -1,5 +1,4 @@
 ﻿import React, { useState } from "react";
-import "./style.css";
 
 // --- Математические функции ---
 function round4(value) {
@@ -85,7 +84,7 @@ function Table({ data, title }) {
     return (
         <div style={{ margin: "1em 0" }}>
             <b>{title}</b>
-            <table>
+            <table border="1" cellPadding={4} style={{ marginTop: 4 }}>
                 <thead>
                     <tr>
                         <th></th>
@@ -114,7 +113,7 @@ function SortedDistribution({ dist, title }) {
     return (
         <div style={{ margin: "1em 0" }}>
             <b>{title} (отсортировано)</b>
-            <table>
+            <table border="1" cellPadding={4} style={{ marginTop: 4 }}>
                 <thead>
                     <tr>
                         <th>Значение</th>
@@ -161,12 +160,42 @@ function Stats({ stats, name }) {
 }
 
 // --- Диалоги для константы и степени ---
+function getThemeColors() {
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return isDark
+        ? {
+            bg: "#23282d",
+            text: "#f3f3f3",
+            title: "#f3f3f3",
+            label: "#e0e0e0",
+            inputBg: "#181c1f",
+            inputText: "#f3f3f3",
+            inputBorder: "#555",
+            buttonBg: "#23282d",
+            buttonText: "#f3f3f3",
+            buttonBorder: "#555"
+        }
+        : {
+            bg: "#fff",
+            text: "#111",
+            title: "#111",
+            label: "#333",
+            inputBg: "#fff",
+            inputText: "#111",
+            inputBorder: "#888",
+            buttonBg: "#fff",
+            buttonText: "#111",
+            buttonBorder: "#888"
+        };
+}
+
 function ConstantDialog({ open, onClose, X, Y, PX, PY }) {
     const [constX, setConstX] = useState(1);
     const [constY, setConstY] = useState(1);
     const [result, setResult] = useState(null);
 
     if (!open) return null;
+    const theme = getThemeColors();
 
     function handleCalc() {
         const Xs = X.map((v) => round4(v * constX));
@@ -188,14 +217,59 @@ function ConstantDialog({ open, onClose, X, Y, PX, PY }) {
     }
 
     return (
-        <div className="dialog-backdrop">
-            <div className="dialog">
-                <h3>Расчеты с константой</h3>
+        <div style={{
+            position: "fixed", left: 0, top: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.3)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center"
+        }}>
+            <div style={{
+                background: theme.bg,
+                color: theme.text,
+                padding: 20,
+                borderRadius: 8,
+                width: 600,
+                maxHeight: "90vh",
+                overflowY: "auto"
+            }}>
+                <h3 style={{ color: theme.title }}>Расчеты с константой</h3>
                 <div>
-                    <label>Константа для X: <input type="number" value={constX} onChange={e => setConstX(Number(e.target.value))} /></label>
-                    <label style={{ marginLeft: 20 }}>Константа для Y: <input type="number" value={constY} onChange={e => setConstY(Number(e.target.value))} /></label>
-                    <button onClick={handleCalc} style={{ marginLeft: 20 }}>Рассчитать</button>
-                    <button onClick={onClose} style={{ marginLeft: 20 }}>Закрыть</button>
+                    <label style={{ color: theme.label }}>Константа для X: <input
+                        type="number"
+                        value={constX}
+                        onChange={e => setConstX(Number(e.target.value))}
+                        style={{
+                            background: theme.inputBg,
+                            color: theme.inputText,
+                            border: `1px solid ${theme.inputBorder}`,
+                            borderRadius: 4,
+                            padding: "6px 12px"
+                        }}
+                    /></label>
+                    <label style={{ color: theme.label, marginLeft: 20 }}>Константа для Y: <input
+                        type="number"
+                        value={constY}
+                        onChange={e => setConstY(Number(e.target.value))}
+                        style={{
+                            background: theme.inputBg,
+                            color: theme.inputText,
+                            border: `1px solid ${theme.inputBorder}`,
+                            borderRadius: 4,
+                            padding: "6px 12px"
+                        }}
+                    /></label>
+                    <button onClick={handleCalc} style={{
+                        background: theme.buttonBg,
+                        color: theme.buttonText,
+                        border: `1px solid ${theme.buttonBorder}`,
+                        borderRadius: 4,
+                        marginLeft: 20
+                    }}>Рассчитать</button>
+                    <button onClick={onClose} style={{
+                        background: theme.buttonBg,
+                        color: theme.buttonText,
+                        border: `1px solid ${theme.buttonBorder}`,
+                        borderRadius: 4,
+                        marginLeft: 20
+                    }}>Закрыть</button>
                 </div>
                 {result && (
                     <div>
@@ -222,10 +296,11 @@ function PowerDialog({ open, onClose, X, Y, PX, PY }) {
     const [result, setResult] = useState(null);
 
     if (!open) return null;
+    const theme = getThemeColors();
 
     function handleCalc() {
-        if (power < 2 || power > 5) {
-            alert("Степень должна быть от 2 до 5!");
+        if (!Number.isFinite(power) || power === 0) {
+            alert("Степень должна быть не равна 0 и быть числом!");
             return;
         }
         const Xp = powVector(X, power);
@@ -247,13 +322,49 @@ function PowerDialog({ open, onClose, X, Y, PX, PY }) {
     }
 
     return (
-        <div className="dialog-backdrop">
-            <div className="dialog">
-                <h3>Возведение в степень</h3>
+        <div style={{
+            position: "fixed", left: 0, top: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.3)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center"
+        }}>
+            <div style={{
+                background: theme.bg,
+                color: theme.text,
+                padding: 20,
+                borderRadius: 8,
+                width: 600,
+                maxHeight: "90vh",
+                overflowY: "auto"
+            }}>
+                <h3 style={{ color: theme.title }}>Возведение в степень</h3>
                 <div>
-                    <label>Степень (2-5): <input type="number" value={power} onChange={e => setPower(Number(e.target.value))} /></label>
-                    <button onClick={handleCalc} style={{ marginLeft: 20 }}>Рассчитать</button>
-                    <button onClick={onClose} style={{ marginLeft: 20 }}>Закрыть</button>
+                    <label style={{ color: theme.label }}>
+                        Степень: <input
+                            type="number"
+                            value={power}
+                            onChange={e => setPower(Number(e.target.value))}
+                            style={{
+                                background: theme.inputBg,
+                                color: theme.inputText,
+                                border: `1px solid ${theme.inputBorder}`,
+                                borderRadius: 4,
+                                padding: "6px 12px"
+                            }}
+                        />
+                    </label>
+                    <button onClick={handleCalc} style={{
+                        background: theme.buttonBg,
+                        color: theme.buttonText,
+                        border: `1px solid ${theme.buttonBorder}`,
+                        borderRadius: 4,
+                        marginLeft: 20
+                    }}>Рассчитать</button>
+                    <button onClick={onClose} style={{
+                        background: theme.buttonBg,
+                        color: theme.buttonText,
+                        border: `1px solid ${theme.buttonBorder}`,
+                        borderRadius: 4,
+                        marginLeft: 20
+                    }}>Закрыть</button>
                 </div>
                 {result && (
                     <div>
@@ -336,25 +447,25 @@ function App() {
     const PY = parseVector(PYstr);
 
     return (
-        <div className="main-container">
+        <div style={{ padding: 24, fontFamily: "sans-serif" }}>
             <h2>Решалка распределений (React)</h2>
             <div>
-                <label>Количество элементов X: <input type="number" value={sizeX} min={1} onChange={e => setSizeX(Number(e.target.value))} /></label>
+                <label>Количество элементов X: <input type="number" value={sizeX} min={1} onChange={e => setSizeX(Number(e.target.value))} style={{ width: 60 }} /></label>
             </div>
             <div>
-                <label>Количество элементов Y: <input type="number" value={sizeY} min={1} onChange={e => setSizeY(Number(e.target.value))} /></label>
+                <label>Количество элементов Y: <input type="number" value={sizeY} min={1} onChange={e => setSizeY(Number(e.target.value))} style={{ width: 60 }} /></label>
             </div>
             <div>
-                <label>X (через пробел): <input value={Xstr} onChange={e => setXstr(e.target.value)} /></label>
+                <label>X (через пробел): <input value={Xstr} onChange={e => setXstr(e.target.value)} style={{ width: 300 }} /></label>
             </div>
             <div>
-                <label>Y (через пробел): <input value={Ystr} onChange={e => setYstr(e.target.value)} /></label>
+                <label>Y (через пробел): <input value={Ystr} onChange={e => setYstr(e.target.value)} style={{ width: 300 }} /></label>
             </div>
             <div>
-                <label>P_X (через пробел): <input value={PXstr} onChange={e => setPXstr(e.target.value)} /></label>
+                <label>P_X (через пробел): <input value={PXstr} onChange={e => setPXstr(e.target.value)} style={{ width: 300 }} /></label>
             </div>
             <div>
-                <label>P_Y (через пробел): <input value={PYstr} onChange={e => setPYstr(e.target.value)} /></label>
+                <label>P_Y (через пробел): <input value={PYstr} onChange={e => setPYstr(e.target.value)} style={{ width: 300 }} /></label>
             </div>
             <div style={{ margin: "1em 0" }}>
                 <button onClick={handleCalculate}>Рассчитать распределения</button>
@@ -377,7 +488,7 @@ function App() {
             )}
             <ConstantDialog open={showConst} onClose={() => setShowConst(false)} X={X} Y={Y} PX={PX} PY={PY} />
             <PowerDialog open={showPower} onClose={() => setShowPower(false)} X={X} Y={Y} PX={PX} PY={PY} />
-            <div style={{ marginTop: 40, color: "#888" }}>Программа разработана Школьником Е.С. и Георгием Х.Р.</div>
+            <div style={{ marginTop: 40, color: "#888" }}>Программа разработана Школьником Е.С. и Хайнак Г.Р.</div>
         </div>
     );
 }
