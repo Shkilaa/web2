@@ -506,14 +506,17 @@ function App() {
     };
     const historyBtnStyle = {
         textAlign: "left",
-        padding: "6px 8px",
-        borderRadius: 4,
+        padding: "10px 0",
+        borderRadius: 8,
         border: "1px solid #aaa",
         background: isDark ? "#23282d" : "#f7f7f7",
         color: isDark ? "#f3f3f3" : "#222",
-        fontSize: "0.95em",
+        fontSize: "1.1em",
         cursor: "pointer",
-        margin: 0
+        margin: 0,
+        width: "100%",
+        minWidth: 0,
+        boxSizing: "border-box"
     };
 
     return (
@@ -537,11 +540,11 @@ function App() {
             <div>
                 <label>P_Y (через пробел): <input value={PYstr} onChange={e => setPYstr(e.target.value)} style={{ width: 300 }} /></label>
             </div>
-            <div style={{ margin: "1em 0" }}>
+            <div className="button-row" style={{ margin: "1em 0" }}>
                 <button onClick={handleCalculate}>Рассчитать распределения</button>
-                <button onClick={() => setShowPower(true)} style={{ marginLeft: 10 }}>Степень</button>
-                <button onClick={() => setShowConst(true)} style={{ marginLeft: 10 }}>Расчеты с C</button>
-                <button onClick={handleClear} style={{ marginLeft: 10 }}>Очистить</button>
+                <button onClick={() => setShowPower(true)}>Степень</button>
+                <button onClick={() => setShowConst(true)}>Расчеты с C</button>
+                <button onClick={handleClear}>Очистить</button>
             </div>
 
             {/* --- История: ПК и мобильная версия --- */}
@@ -595,8 +598,8 @@ function App() {
                             background: "#e57373",
                             color: "#fff",
                             border: "1px solid #c62828",
-                            borderRadius: 4,
-                            padding: "6px 0"
+                            borderRadius: 8,
+                            padding: "10px 0"
                         }}
                         onClick={() => setHistory([])}
                     >
