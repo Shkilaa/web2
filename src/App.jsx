@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // --- Математические функции ---
 function round4(value) {
@@ -398,6 +398,20 @@ function App() {
     const [showConst, setShowConst] = useState(false);
     const [showPower, setShowPower] = useState(false);
 
+    // --- История последних 3 расчётов ---
+    const [history, setHistory] = useState(() => {
+        try {
+            const saved = localStorage.getItem('calcHistory');
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        localStorage.setItem('calcHistory', JSON.stringify(history));
+    }, [history]);
+
     function handleCalculate() {
         const X = parseVector(Xstr);
         const Y = parseVector(Ystr);
@@ -425,7 +439,7 @@ function App() {
         const mulT = mulTable(X, Y);
         const probT = probTable(PX, PY);
 
-        setResult({
+        const newResult = {
             X, Y, PX, PY,
             sumT, subT, mulT, probT,
             sortedSum: createSortedDistribution(sumT, probT),
@@ -433,6 +447,11 @@ function App() {
             sortedMul: createSortedDistribution(mulT, probT),
             statsX: calcStats(X, PX, 2, "X"),
             statsY: calcStats(Y, PY, 2, "Y"),
+        };
+        setResult(newResult);
+        setHistory(prev => {
+            const arr = [newResult, ...prev];
+            return arr.slice(0, 3);
         });
     }
 
@@ -446,9 +465,37 @@ function App() {
     const PX = parseVector(PXstr);
     const PY = parseVector(PYstr);
 
+    // --- Стили для истории справа ---
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const historyBoxStyle = {
+        position: "fixed",
+        top: 24,
+        right: 24,
+        zIndex: 2000,
+        background: isDark ? "rgba(35,40,45,0.98)" : "rgba(255,255,255,0.95)",
+        color: isDark ? "#f3f3f3" : "#111",
+        border: "1px solid #888",
+        borderRadius: 8,
+        padding: "12px 16px",
+        minWidth: 220,
+        boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+        maxWidth: "40vw"
+    };
+    const historyBtnStyle = {
+        textAlign: "left",
+        padding: "6px 8px",
+        borderRadius: 4,
+        border: "1px solid #aaa",
+        background: isDark ? "#23282d" : "#f7f7f7",
+        color: isDark ? "#f3f3f3" : "#222",
+        fontSize: "0.95em",
+        cursor: "pointer",
+        margin: 0
+    };
+
     return (
         <div style={{ padding: 24, fontFamily: "sans-serif" }}>
-            <h2>Решалка распределений (React)</h2>
+            <h2>Решалка распределений</h2>
             <div>
                 <label>Количество элементов X: <input type="number" value={sizeX} min={1} onChange={e => setSizeX(Number(e.target.value))} style={{ width: 60 }} /></label>
             </div>
@@ -473,6 +520,37 @@ function App() {
                 <button onClick={() => setShowConst(true)} style={{ marginLeft: 10 }}>Расчеты с C</button>
                 <button onClick={handleClear} style={{ marginLeft: 10 }}>Очистить</button>
             </div>
+
+            {/* --- История справа сверху --- */}
+            {history.length > 0 && (
+                <div style={historyBoxStyle}>
+                    <b style={{ display: "block", marginBottom: 8 }}>История расчётов</b>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {history.map((h, i) => (
+                            <button
+                                key={i}
+                                style={historyBtnStyle}
+                                onClick={() => setResult(h)}
+                            >
+                                X: [{h.X.join(", ")}]<br />Y: [{h.Y.join(", ")}]
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        style={{
+                            ...historyBtnStyle,
+                            background: "#e57373",
+                            color: "#fff",
+                            border: "1px solid #c62828",
+                            marginTop: 12
+                        }}
+                        onClick={() => setHistory([])}
+                    >
+                        Очистить историю
+                    </button>
+                </div>
+            )}
+
             {result && (
                 <div>
                     <Table data={result.sumT} title="Сумма (X+Y)" />
