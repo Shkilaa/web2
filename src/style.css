@@ -49,29 +49,30 @@ input, select, textarea {
     flex-wrap: wrap;
 }
 
-    .button-row button {
-        background: var(--button-bg);
-        color: var(--button-text);
-        border: 1px solid #888;
-        padding: 10px 0;
-        font-size: 1.1em;
-        border-radius: 8px;
-        margin-bottom: 0;
-        margin-right: 0;
-        transition: background 0.2s, color 0.2s;
-        min-width: 120px;
-        text-align: center;
-        cursor: pointer;
-    }
+.button-row button {
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid #888;
+    padding: 10px 24px; /* одинаковые отступы сверху/снизу и слева/справа */
+    font-size: 1.1em;
+    border-radius: 8px;
+    margin-bottom: 0;
+    margin-right: 0;
+    transition: background 0.2s, color 0.2s;
+    min-width: 120px;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+}
 
-        .button-row button:active,
-        .button-row button:focus {
-            outline: 2px solid var(--accent-color);
-        }
+.button-row button:active,
+.button-row button:focus {
+    outline: 2px solid var(--accent-color);
+}
 
-        .button-row button:hover {
-            filter: brightness(0.95);
-        }
+.button-row button:hover {
+    filter: brightness(0.95);
+}
 
 @media (max-width: 700px) {
     .button-row {
@@ -81,15 +82,15 @@ input, select, textarea {
         width: 100%;
     }
 
-        .button-row button {
-            display: block;
-            width: 100%;
-            min-width: 0;
-            margin: 0 0 12px 0;
-            font-size: 1.1em;
-            box-sizing: border-box;
-            text-align: center;
-        }
+    .button-row button {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        margin: 0 0 12px 0;
+        font-size: 1.1em;
+        box-sizing: border-box;
+        text-align: center;
+    }
 }
 
 table {
@@ -129,4 +130,66 @@ b {
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+}
+
+/* История справа сверху (ПК) и снизу (мобильные) */
+@media (max-width: 700px) {
+    .history-box {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2000;
+        background: var(--bg-color);
+        color: var(--text-color);
+        border-top: 1px solid #888;
+        border-radius: 12px 12px 0 0;
+        padding: 10px 8px 8px 8px;
+        box-shadow: 0 -2px 16px rgba(0,0,0,0.12);
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+}
+@media (min-width: 701px) {
+    .history-box {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 2000;
+        background: var(--bg-color);
+        color: var(--text-color);
+        border: 1px solid #888;
+        border-radius: 8px;
+        padding: 12px 16px;
+        min-width: 220px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        max-width: 40vw;
+    }
+}
+.history-btn {
+    text-align: left;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 0.95em;
+    cursor: pointer;
+    margin: 0 0 6px 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+.history-btn:last-child {
+    margin-bottom: 0;
+}
+.history-clear-btn {
+    background: #e57373;
+    color: #fff;
+    border: 1px solid #c62828;
+    border-radius: 4px;
+    padding: 8px 0;
+    margin-top: 8px;
+    width: 100%;
+    font-size: 1em;
+    cursor: pointer;
 }
